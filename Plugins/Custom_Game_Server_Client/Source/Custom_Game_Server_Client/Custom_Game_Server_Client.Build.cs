@@ -28,7 +28,8 @@ public class Custom_Game_Server_Client : ModuleRules
 				"Core",
                 "HTTP",
                 "Json",
-                "JsonUtilities"
+                "JsonUtilities",
+				"DeveloperSettings"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

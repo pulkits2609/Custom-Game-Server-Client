@@ -14,7 +14,17 @@ public:
 
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
     virtual void Deinitialize() override;
-    void Login(const FString& Username,const FString& Password);
+
+    // Session APIs
+	void Login(const FString& Username, const FString& Password);
+	void Logout();
+	void FetchSession();
+
+    //Session State
+    const FString& GetSessionID() const;
+    const FString& GetSessionToken() const;
+
+    bool IsLoggedIn() const;
 
 private:
 
