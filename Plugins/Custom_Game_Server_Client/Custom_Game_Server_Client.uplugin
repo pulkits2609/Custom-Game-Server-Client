@@ -1,0 +1,24 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Custom_Game_Server_Client",
+	"Description": "Unreal Engine client plugin for the Custom Game Server backend.",
+	"Category": "Other",
+	"CreatedBy": "Pulkit Sharma",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "Custom_Game_Server_Client",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
