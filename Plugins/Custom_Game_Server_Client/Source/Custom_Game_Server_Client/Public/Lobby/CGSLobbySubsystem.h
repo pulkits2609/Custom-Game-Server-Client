@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
-#include "Lobby/Models/CGSLobbyTypes.h"
+#include "Lobby/CGSLobbyTypes.h"
 #include "CGSLobbySubsystem.generated.h"
 
 UCLASS()
@@ -31,6 +31,43 @@ public:
 
 	const TArray<FCGSLobbyInfo>& GetCachedLobbyList() const;
 	const FCGSLobbyDetailedInfo& GetCurrentLobbyInfo() const;
+
+	//lobby delegates properties
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyCreated OnLobbyCreated;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyCreateFailed OnLobbyCreateFailed;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyFetched OnLobbyFetched;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyFetchFailed OnLobbyFetchFailed;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyJoined OnLobbyJoined;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyJoinFailed OnLobbyJoinFailed;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyLeft OnLobbyLeft;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyLeaveFailed OnLobbyLeaveFailed;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyDestroyed OnLobbyDestroyed;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyDestroyFailed OnLobbyDestroyFailed;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyListReceived OnLobbyListReceived;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnLobbyListFailed OnLobbyListFailed;
 
 private:
 

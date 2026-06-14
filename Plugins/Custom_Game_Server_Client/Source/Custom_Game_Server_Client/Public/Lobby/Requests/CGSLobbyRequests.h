@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Lobby/Models/CGSLobbyTypes.h"
+#include "Lobby/CGSLobbyTypes.h"
 
 class FJsonObject;
 

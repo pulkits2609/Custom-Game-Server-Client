@@ -62,3 +62,63 @@ struct FCGSLobbyActionResponse
 	UPROPERTY(BlueprintReadOnly, Category="CGS|Lobby")
 	FString LobbyID;
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyCreated,
+    const FCGSLobbyActionResponse&,
+    Response);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyCreateFailed,
+    const FString&,
+    Error);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyFetched,
+    const FCGSLobbyDetailedInfo&,
+    LobbyInfo);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyFetchFailed,
+    const FString&,
+    Error);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyJoined,
+    const FCGSLobbyActionResponse&,
+    Response);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyJoinFailed,
+    const FString&,
+    Error);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyLeft,
+    const FString&,
+    LobbyID);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyLeaveFailed,
+    const FString&,
+    Error);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyDestroyed,
+    const FString&,
+    LobbyID);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyDestroyFailed,
+    const FString&,
+    Error);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyListReceived,
+    TArray<FCGSLobbyInfo>,
+    Lobbies);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnLobbyListFailed,
+    const FString&,
+    Error);

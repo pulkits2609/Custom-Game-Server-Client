@@ -82,6 +82,9 @@ void UCGSLobbySubsystem::CreateLobby(const FString& LobbyName, int32 MaxPlayers)
 			LogTemp,
 			Error,
 			TEXT("CreateLobby failed - invalid lobby name or max players"));
+		
+		OnLobbyCreateFailed.Broadcast(TEXT("CreateLobby failed - invalid lobby name or max players"));
+		
 		return;
 	}
 
@@ -107,6 +110,9 @@ void UCGSLobbySubsystem::CreateLobby(const FString& LobbyName, int32 MaxPlayers)
 			if (!bWasSuccessful || !Response.IsValid())
 			{
 				UE_LOG(LogTemp, Error, TEXT("CreateLobby request failed"));
+
+				OnLobbyCreateFailed.Broadcast(TEXT("CreateLobby request failed"));
+				
 				return;
 			}
 
@@ -117,6 +123,9 @@ void UCGSLobbySubsystem::CreateLobby(const FString& LobbyName, int32 MaxPlayers)
 					Error,
 					TEXT("CreateLobby failed: %s"),
 					*Response->GetContentAsString());
+
+				OnLobbyCreateFailed.Broadcast(Response->GetContentAsString());
+				
 				return;
 			}
 
@@ -126,10 +135,15 @@ void UCGSLobbySubsystem::CreateLobby(const FString& LobbyName, int32 MaxPlayers)
 				ParsedResponse))
 			{
 				UE_LOG(LogTemp, Error, TEXT("Failed to parse CreateLobby response"));
+				
+				OnLobbyCreateFailed.Broadcast(TEXT("Failed to parse CreateLobby response"));
+				
 				return;
 			}
 
 			CurrentLobbyID = ParsedResponse.LobbyID;
+			
+			OnLobbyCreated.Broadcast(ParsedResponse);
 
 			UE_LOG(LogTemp, Warning, TEXT("Lobby Created"));
 			UE_LOG(LogTemp, Warning, TEXT("LobbyID: %s"), *CurrentLobbyID);
@@ -159,6 +173,7 @@ void UCGSLobbySubsystem::GetLobbyByID(const FString& LobbyID)
 	if (LobbyID.IsEmpty())
 	{
 		UE_LOG(LogTemp, Error, TEXT("GetLobbyByID failed - empty LobbyID"));
+		OnLobbyFetchFailed.Broadcast(TEXT("Get LobbyByID Failed - Empty lobby ID"));
 		return;
 	}
 
@@ -181,6 +196,7 @@ void UCGSLobbySubsystem::GetLobbyByID(const FString& LobbyID)
 			if (!bWasSuccessful || !Response.IsValid())
 			{
 				UE_LOG(LogTemp, Error, TEXT("GetLobby failed"));
+				OnLobbyFetchFailed.Broadcast(TEXT("Get Lobby Failed"));
 				return;
 			}
 
@@ -191,6 +207,9 @@ void UCGSLobbySubsystem::GetLobbyByID(const FString& LobbyID)
 					Error,
 					TEXT("GetLobby failed: %s"),
 					*Response->GetContentAsString());
+				
+				OnLobbyFetchFailed.Broadcast(*Response->GetContentAsString());	
+
 				return;
 			}
 
@@ -198,6 +217,9 @@ void UCGSLobbySubsystem::GetLobbyByID(const FString& LobbyID)
 			if (!CGSHttp::TryDeserializeJsonObject(Response->GetContentAsString(), JsonObject))
 			{
 				UE_LOG(LogTemp, Error, TEXT("Failed to parse GetLobby response"));
+				
+				OnLobbyFetchFailed.Broadcast(TEXT("Failed to parse GetLobby response"));
+				
 				return;
 			}
 
@@ -205,11 +227,16 @@ void UCGSLobbySubsystem::GetLobbyByID(const FString& LobbyID)
 			if (!CGSLobbyRequests::TryParseLobbyDetailedInfo(JsonObject, ParsedLobby))
 			{
 				UE_LOG(LogTemp, Error, TEXT("Failed to extract lobby fields"));
+				
+				OnLobbyFetchFailed.Broadcast(TEXT("Failed to extract lobby fields"));
+				
 				return;
 			}
 
 			CurrentLobbyID = LobbyID;
 			CurrentLobbyInfo = ParsedLobby;
+
+			OnLobbyFetched.Broadcast(CurrentLobbyInfo);
 
 			UE_LOG(LogTemp, Warning, TEXT("Lobby Fetched"));
 			UE_LOG(LogTemp, Warning, TEXT("LobbyID: %s"), *CurrentLobbyInfo.LobbyID);
@@ -238,6 +265,7 @@ void UCGSLobbySubsystem::GetLobbies()
 			if (!bWasSuccessful || !Response.IsValid())
 			{
 				UE_LOG(LogTemp, Error, TEXT("GetLobbies request failed"));
+				OnLobbyListFailed.Broadcast(TEXT("GetLobbies request failed"));
 				return;
 			}
 
@@ -248,6 +276,7 @@ void UCGSLobbySubsystem::GetLobbies()
 					Error,
 					TEXT("GetLobbies failed: %s"),
 					*Response->GetContentAsString());
+				OnLobbyListFailed.Broadcast(Response->GetContentAsString());
 				return;
 			}
 
@@ -257,6 +286,7 @@ void UCGSLobbySubsystem::GetLobbies()
 				ParsedLobbies))
 			{
 				UE_LOG(LogTemp, Error, TEXT("Failed to parse lobby list"));
+				OnLobbyListFailed.Broadcast(TEXT("Failed to parse lobby list"));
 				return;
 			}
 
@@ -267,6 +297,8 @@ void UCGSLobbySubsystem::GetLobbies()
 				Warning,
 				TEXT("Lobby list received: %d lobby(s)"),
 				CachedLobbyList.Num());
+			
+			OnLobbyListReceived.Broadcast(CachedLobbyList);
 
 			for (const FCGSLobbyInfo& Lobby : CachedLobbyList)
 			{
@@ -290,6 +322,7 @@ void UCGSLobbySubsystem::JoinLobby(const FString& LobbyID)
 	if (LobbyID.IsEmpty())
 	{
 		UE_LOG(LogTemp, Error, TEXT("JoinLobby failed - empty LobbyID"));
+		OnLobbyJoinFailed.Broadcast(TEXT("LobbyID is empty"));
 		return;
 	}
 
@@ -312,6 +345,7 @@ void UCGSLobbySubsystem::JoinLobby(const FString& LobbyID)
 			if (!bWasSuccessful || !Response.IsValid())
 			{
 				UE_LOG(LogTemp, Error, TEXT("JoinLobby request failed"));
+				OnLobbyJoinFailed.Broadcast(TEXT("JoinLobby request failed"));
 				return;
 			}
 
@@ -322,6 +356,7 @@ void UCGSLobbySubsystem::JoinLobby(const FString& LobbyID)
 					Error,
 					TEXT("JoinLobby failed: %s"),
 					*Response->GetContentAsString());
+				OnLobbyJoinFailed.Broadcast(Response->GetContentAsString());
 				return;
 			}
 
@@ -331,10 +366,12 @@ void UCGSLobbySubsystem::JoinLobby(const FString& LobbyID)
 				ParsedResponse))
 			{
 				UE_LOG(LogTemp, Error, TEXT("Failed to parse JoinLobby response"));
+				OnLobbyJoinFailed.Broadcast(TEXT("Failed to parse JoinLobby response"));
 				return;
 			}
 
 			CurrentLobbyID = LobbyID;
+			OnLobbyJoined.Broadcast(ParsedResponse);
 
 			UE_LOG(LogTemp, Warning, TEXT("Joined Lobby"));
 			UE_LOG(LogTemp, Warning, TEXT("LobbyID: %s"), *CurrentLobbyID);
@@ -350,6 +387,7 @@ void UCGSLobbySubsystem::LeaveLobby(const FString& LobbyID)
 	if (LobbyID.IsEmpty())
 	{
 		UE_LOG(LogTemp, Error, TEXT("LeaveLobby failed - empty LobbyID"));
+		OnLobbyLeaveFailed.Broadcast(TEXT("LobbyID is empty"));
 		return;
 	}
 
@@ -372,6 +410,7 @@ void UCGSLobbySubsystem::LeaveLobby(const FString& LobbyID)
 			if (!bWasSuccessful || !Response.IsValid())
 			{
 				UE_LOG(LogTemp, Error, TEXT("LeaveLobby request failed"));
+				OnLobbyLeaveFailed.Broadcast(TEXT("LeaveLobby request failed"));
 				return;
 			}
 
@@ -382,12 +421,14 @@ void UCGSLobbySubsystem::LeaveLobby(const FString& LobbyID)
 					Error,
 					TEXT("LeaveLobby failed: %s"),
 					*Response->GetContentAsString());
+				OnLobbyLeaveFailed.Broadcast(Response->GetContentAsString());
 				return;
 			}
 
 			UE_LOG(LogTemp, Warning, TEXT("LeaveLobby success: %s"), *Response->GetContentAsString());
 
 			ClearCurrentLobbyStateIfMatches(LobbyID);
+			OnLobbyLeft.Broadcast(LobbyID);
 		});
 
 	Request->ProcessRequest();
@@ -398,6 +439,7 @@ void UCGSLobbySubsystem::DestroyLobby(const FString& LobbyID)
 	if (LobbyID.IsEmpty())
 	{
 		UE_LOG(LogTemp, Error, TEXT("DestroyLobby failed - empty LobbyID"));
+		OnLobbyDestroyFailed.Broadcast(TEXT("LobbyID is empty"));
 		return;
 	}
 
@@ -420,6 +462,7 @@ void UCGSLobbySubsystem::DestroyLobby(const FString& LobbyID)
 			if (!bWasSuccessful || !Response.IsValid())
 			{
 				UE_LOG(LogTemp, Error, TEXT("DestroyLobby request failed"));
+				OnLobbyDestroyFailed.Broadcast(TEXT("DestroyLobby request failed"));
 				return;
 			}
 
@@ -430,12 +473,14 @@ void UCGSLobbySubsystem::DestroyLobby(const FString& LobbyID)
 					Error,
 					TEXT("DestroyLobby failed: %s"),
 					*Response->GetContentAsString());
+				OnLobbyDestroyFailed.Broadcast(Response->GetContentAsString());	
 				return;
 			}
 
 			UE_LOG(LogTemp, Warning, TEXT("DestroyLobby success: %s"), *Response->GetContentAsString());
 
 			ClearCurrentLobbyStateIfMatches(LobbyID);
+			OnLobbyDestroyed.Broadcast(LobbyID);
 		});
 
 	Request->ProcessRequest();
