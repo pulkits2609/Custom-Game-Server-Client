@@ -81,6 +81,8 @@ void UCGSSessionSubsystem::Login(const FString& Username, const FString& Passwor
 					LogTemp,
 					Error,
 					TEXT("Login Request Failed"));
+				
+				OnLoginFailed.Broadcast(TEXT("Login Request Failed"));
 
 				return;
 			}
@@ -95,7 +97,9 @@ void UCGSSessionSubsystem::Login(const FString& Username, const FString& Passwor
 					LogTemp,
 					Error,
 					TEXT("Failed To Parse Login Response"));
-
+				
+				OnLoginFailed.Broadcast(TEXT("Failed To Parse Login Response"));
+				
 				return;
 			}
 
@@ -106,6 +110,12 @@ void UCGSSessionSubsystem::Login(const FString& Username, const FString& Passwor
 			SessionToken =
 				JsonResponse->GetStringField(
 					TEXT("token"));
+			
+			FCGSLoginResponse LoginResponse;
+			LoginResponse.SessionID = SessionID;
+			LoginResponse.Token = SessionToken;
+
+			OnLoginSuccess.Broadcast(LoginResponse);
 
 			UE_LOG(
 				LogTemp,
@@ -172,7 +182,6 @@ void UCGSSessionSubsystem::Logout()
 					LogTemp,
 					Error,
 					TEXT("Logout Failed"));
-
 				return;
 			}
 
@@ -184,6 +193,7 @@ void UCGSSessionSubsystem::Logout()
 
 			SessionID.Empty();
 			SessionToken.Empty();
+			OnLogoutSuccess.Broadcast();
 		});
 
 	Request->ProcessRequest();
@@ -213,7 +223,7 @@ void UCGSSessionSubsystem::FetchSession()
 		SessionToken);
 
 	Request->OnProcessRequestComplete().BindLambda(
-		[]
+		[this]
 		(
 			FHttpRequestPtr Request,
 			FHttpResponsePtr Response,
@@ -226,7 +236,7 @@ void UCGSSessionSubsystem::FetchSession()
 					LogTemp,
 					Error,
 					TEXT("Fetch Session Failed"));
-
+				OnSessionFetchFailed.Broadcast(TEXT("Fetch Session Failed"));
 				return;
 			}
 
@@ -240,7 +250,7 @@ void UCGSSessionSubsystem::FetchSession()
 					LogTemp,
 					Error,
 					TEXT("Failed To Parse Session Response"));
-
+				OnSessionFetchFailed.Broadcast(TEXT("Failed To Parse Session Response"));
 				return;
 			}
 
@@ -251,6 +261,14 @@ void UCGSSessionSubsystem::FetchSession()
 			const FString PlayerName =
 				JsonResponse->GetStringField(
 					TEXT("playerName"));
+			
+			FCGSSessionInfo SessionInfo;
+
+			SessionInfo.SessionID = SessionID;
+			SessionInfo.Username = Username;
+			SessionInfo.PlayerName = PlayerName;
+
+			OnSessionFetched.Broadcast(SessionInfo);
 
 			UE_LOG(
 				LogTemp,

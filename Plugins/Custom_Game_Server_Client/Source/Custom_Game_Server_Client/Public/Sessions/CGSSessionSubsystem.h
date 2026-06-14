@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "Sessions/Delegates/CGSSessionDelegates.h"
 #include "CGSSessionSubsystem.generated.h"
 
 UCLASS()
@@ -26,8 +27,24 @@ public:
 
     bool IsLoggedIn() const;
 
+    UPROPERTY(BlueprintAssignable, Category="CGS|Session")
+    FOnLoginSuccess OnLoginSuccess;
+
+    UPROPERTY(BlueprintAssignable, Category="CGS|Session")
+    FOnLoginFailed OnLoginFailed;
+
+    UPROPERTY(BlueprintAssignable, Category="CGS|Session")
+    FOnLogoutSuccess OnLogoutSuccess;
+
+    UPROPERTY(BlueprintAssignable, Category="CGS|Session")
+    FOnSessionFetched OnSessionFetched;
+
+    UPROPERTY(BlueprintAssignable, Category="CGS|Session")
+    FOnSessionFetchFailed OnSessionFetchFailed;
+
 private:
 
     FString SessionID;
     FString SessionToken;
+
 };
