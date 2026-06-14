@@ -1,0 +1,46 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Subsystems/GameInstanceSubsystem.h"
+#include "Lobby/Models/CGSLobbyTypes.h"
+#include "CGSLobbySubsystem.generated.h"
+
+UCLASS()
+class CUSTOM_GAME_SERVER_CLIENT_API UCGSLobbySubsystem
+	: public UGameInstanceSubsystem
+{
+	GENERATED_BODY()
+
+public:
+
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
+
+	// Lobby APIs
+	void CreateLobby(const FString& LobbyName, int32 MaxPlayers);
+	void GetLobby();
+	void GetLobbyByID(const FString& LobbyID);
+	void GetLobbies();
+	void JoinLobby(const FString& LobbyID);
+	void LeaveLobby(const FString& LobbyID);
+	void DestroyLobby(const FString& LobbyID);
+
+	// Lobby State
+	const FString& GetCurrentLobbyID() const;
+	bool HasCurrentLobby() const;
+
+	const TArray<FCGSLobbyInfo>& GetCachedLobbyList() const;
+	const FCGSLobbyDetailedInfo& GetCurrentLobbyInfo() const;
+
+private:
+
+	FString CurrentLobbyID;
+	TArray<FCGSLobbyInfo> CachedLobbyList;
+	FCGSLobbyDetailedInfo CurrentLobbyInfo;
+
+	class UCGSSessionSubsystem* GetSessionSubsystem() const;
+	bool GetSessionToken(FString& OutToken) const;
+
+	void ClearCurrentLobbyState();
+	void ClearCurrentLobbyStateIfMatches(const FString& LobbyID);
+};

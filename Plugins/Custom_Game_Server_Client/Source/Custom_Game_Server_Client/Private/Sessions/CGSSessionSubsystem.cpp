@@ -33,7 +33,7 @@ void UCGSSessionSubsystem::Initialize(
 		Warning,
 		TEXT("CGS Base URL: %s"),
 		*Settings->BaseUrl);
-    Login("Pulkit", "password123"); //testing only for now
+    
 }
 
 void UCGSSessionSubsystem::Deinitialize()
