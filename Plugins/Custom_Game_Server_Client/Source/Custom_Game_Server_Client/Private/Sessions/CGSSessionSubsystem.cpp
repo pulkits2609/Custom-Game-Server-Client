@@ -8,6 +8,7 @@
 #include "Serialization/JsonWriter.h"
 #include "Http/CGSHttpHelpers.h"
 #include "Settings/CGSClientSettings.h"
+#include "Realtime/CGSRealtimeSubsystem.h"
 
 //all of the above includes are classes being provided by dependencies : 
 //http , jsonUtilities, json which were added to build.cs
@@ -46,17 +47,17 @@ void UCGSSessionSubsystem::Deinitialize()
     Super::Deinitialize();
 }
 
-void UCGSSessionSubsystem::Login(const FString& Username, const FString& Password){
+void UCGSSessionSubsystem::Login(const FString& InUsername,const FString& InPassword){
 	TSharedPtr<FJsonObject> JsonObject =
 		MakeShared<FJsonObject>();
 
 	JsonObject->SetStringField(
 		TEXT("username"),
-		Username);
+		InUsername);
 
 	JsonObject->SetStringField(
 		TEXT("password"),
-		Password);
+		InPassword);
 
 	const FString JsonBody =
 		CGSHttp::SerializeJsonObject(JsonObject);
@@ -116,6 +117,14 @@ void UCGSSessionSubsystem::Login(const FString& Username, const FString& Passwor
 			LoginResponse.Token = SessionToken;
 
 			OnLoginSuccess.Broadcast(LoginResponse);
+			if (UGameInstance* GI = GetGameInstance())
+			{
+				if (UCGSRealtimeSubsystem* Realtime =
+					GI->GetSubsystem<UCGSRealtimeSubsystem>())
+				{
+					Realtime->Connect();
+				}
+			}
 
 			UE_LOG(
 				LogTemp,
@@ -254,13 +263,9 @@ void UCGSSessionSubsystem::FetchSession()
 				return;
 			}
 
-			const FString Username =
-				JsonResponse->GetStringField(
-					TEXT("username"));
+			Username = JsonResponse->GetStringField(TEXT("username"));
 
-			const FString PlayerName =
-				JsonResponse->GetStringField(
-					TEXT("playerName"));
+			PlayerName = JsonResponse->GetStringField(TEXT("playerName"));
 			
 			FCGSSessionInfo SessionInfo;
 
@@ -299,4 +304,14 @@ const FString& UCGSSessionSubsystem::GetSessionToken() const
 bool UCGSSessionSubsystem::IsLoggedIn() const
 {
     return !SessionToken.IsEmpty();
+}
+
+const FString& UCGSSessionSubsystem::GetUsername() const
+{
+    return Username;
+}
+
+const FString& UCGSSessionSubsystem::GetPlayerName() const
+{
+    return PlayerName;
 }

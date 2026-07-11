@@ -42,7 +42,9 @@ public class Custom_Game_Server_Client : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"UMG"
+				"UMG",
+				"Sockets",
+				"Networking"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

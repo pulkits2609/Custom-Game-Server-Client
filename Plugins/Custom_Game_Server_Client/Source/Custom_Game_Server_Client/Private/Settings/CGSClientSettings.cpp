@@ -2,7 +2,10 @@
 
 UCGSClientSettings::UCGSClientSettings()
 {
-	BaseUrl = TEXT("http://localhost:8080");
+    BaseUrl = TEXT("http://localhost:8080");
+
+    RealtimeHost = TEXT("127.0.0.1");
+    RealtimePort = 8081;
 }
 
 FName UCGSClientSettings::GetCategoryName() const

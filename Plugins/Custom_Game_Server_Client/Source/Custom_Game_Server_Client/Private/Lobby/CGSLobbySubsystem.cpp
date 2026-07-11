@@ -505,3 +505,83 @@ const FCGSLobbyDetailedInfo& UCGSLobbySubsystem::GetCurrentLobbyInfo() const
 {
 	return CurrentLobbyInfo;
 }
+
+void UCGSLobbySubsystem::KickPlayer(
+    const FString& LobbyID,
+    const FString& TargetUsername)
+{
+    FString Token;
+
+    if (!GetSessionToken(Token))
+    {
+        OnPlayerKickFailed.Broadcast(
+            TEXT("Not Logged In"));
+
+        return;
+    }
+
+    TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request =
+        CGSHttp::CreateRequest(
+            CGSLobbyRequests::BuildKickLobbyPath(
+                LobbyID,
+                TargetUsername),
+            TEXT("POST"));
+
+    CGSHttp::SetAuthHeader(
+        *Request,
+        Token);
+
+    Request->OnProcessRequestComplete().BindLambda(
+        [this]
+        (
+            FHttpRequestPtr Request,
+            FHttpResponsePtr Response,
+            bool bWasSuccessful
+        )
+        {
+            if (!bWasSuccessful || !Response.IsValid())
+            {
+                OnPlayerKickFailed.Broadcast(
+                    TEXT("Kick Player Failed"));
+
+                return;
+            }
+
+            TSharedPtr<FJsonObject> JsonResponse;
+
+            if (!CGSHttp::TryDeserializeJsonObject(
+                Response->GetContentAsString(),
+                JsonResponse))
+            {
+                OnPlayerKickFailed.Broadcast(
+                    TEXT("Failed To Parse Response"));
+
+                return;
+            }
+
+            FCGSKickPlayerResponse KickResponse;
+
+            KickResponse.Message =
+                JsonResponse->GetStringField(
+                    TEXT("message"));
+
+            KickResponse.LobbyID =
+                JsonResponse->GetStringField(
+                    TEXT("lobbyID"));
+
+            KickResponse.Username =
+                JsonResponse->GetStringField(
+                    TEXT("username"));
+
+            OnPlayerKicked.Broadcast(
+                KickResponse);
+
+            UE_LOG(
+                LogTemp,
+                Warning,
+                TEXT("Player Kicked: %s"),
+                *KickResponse.Username);
+        });
+
+    Request->ProcessRequest();
+}

@@ -15,6 +15,7 @@ namespace CGSLobbyRequests
 	FString BuildJoinLobbyPath(const FString& LobbyID);
 	FString BuildLeaveLobbyPath(const FString& LobbyID);
 	FString BuildDestroyLobbyPath(const FString& LobbyID);
+	FString BuildKickLobbyPath(const FString& LobbyID, const FString& TargetUsername);
 
 	bool TryParseLobbyInfo(const TSharedPtr<FJsonObject>& JsonObject, FCGSLobbyInfo& OutLobby);
 	bool TryParseLobbyDetailedInfo(const TSharedPtr<FJsonObject>& JsonObject, FCGSLobbyDetailedInfo& OutLobby);

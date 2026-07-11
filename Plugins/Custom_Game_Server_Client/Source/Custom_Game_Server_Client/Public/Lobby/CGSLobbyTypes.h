@@ -63,6 +63,21 @@ struct FCGSLobbyActionResponse
 	FString LobbyID;
 };
 
+USTRUCT(BlueprintType)
+struct FCGSKickPlayerResponse
+{
+    GENERATED_BODY()
+
+    UPROPERTY(BlueprintReadOnly, Category="CGS|Lobby")
+    FString Message;
+
+    UPROPERTY(BlueprintReadOnly, Category="CGS|Lobby")
+    FString LobbyID;
+
+    UPROPERTY(BlueprintReadOnly, Category="CGS|Lobby")
+    FString Username;
+};
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
     FOnLobbyCreated,
     const FCGSLobbyActionResponse&,
@@ -120,5 +135,15 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
     FOnLobbyListFailed,
+    const FString&,
+    Error);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnPlayerKicked,
+    const FCGSKickPlayerResponse&,
+    Response);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(
+    FOnPlayerKickFailed,
     const FString&,
     Error);

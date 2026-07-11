@@ -28,6 +28,7 @@ public:
 	// Lobby State
 	const FString& GetCurrentLobbyID() const;
 	bool HasCurrentLobby() const;
+	void KickPlayer(const FString& LobbyID,const FString& TargetUsername);
 
 	const TArray<FCGSLobbyInfo>& GetCachedLobbyList() const;
 	const FCGSLobbyDetailedInfo& GetCurrentLobbyInfo() const;
@@ -68,6 +69,12 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
 	FOnLobbyListFailed OnLobbyListFailed;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnPlayerKicked OnPlayerKicked;
+
+	UPROPERTY(BlueprintAssignable, Category="CGS|Lobby")
+	FOnPlayerKickFailed OnPlayerKickFailed;
 
 private:
 

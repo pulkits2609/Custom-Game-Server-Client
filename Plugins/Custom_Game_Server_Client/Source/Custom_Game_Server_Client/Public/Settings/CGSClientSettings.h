@@ -23,4 +23,18 @@ public:
 		BlueprintReadOnly,
 		Category = "Server")
 	FString BaseUrl;
+
+	UPROPERTY(
+		Config,
+		EditAnywhere,
+		BlueprintReadOnly,
+		Category="Server")
+	FString RealtimeHost;
+
+	UPROPERTY(
+		Config,
+		EditAnywhere,
+		BlueprintReadOnly,
+		Category="Server")
+	int32 RealtimePort;
 };

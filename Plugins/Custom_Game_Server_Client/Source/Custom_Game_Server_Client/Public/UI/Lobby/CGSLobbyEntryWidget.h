@@ -24,8 +24,18 @@ public:
     UFUNCTION(BlueprintPure)
     const FCGSLobbyInfo& GetLobbyInfo() const;
 
+    UFUNCTION(BlueprintCallable, Category="CGS|Lobby")
+    void SetTargetUsername(
+        const FString& InUsername);
+
+    UFUNCTION(BlueprintCallable, Category="CGS|Lobby")
+    void KickPlayer();
+
 protected:
 
     UPROPERTY(BlueprintReadOnly)
     FCGSLobbyInfo LobbyInfo;
+
+    UPROPERTY(BlueprintReadOnly, Category="CGS|Lobby")
+    FString TargetUsername;
 };

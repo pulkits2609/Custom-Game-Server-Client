@@ -76,6 +76,16 @@ namespace CGSLobbyRequests
 		return FString::Printf(TEXT("/lobby/destroy/%s"), *LobbyID);
 	}
 
+	FString BuildKickLobbyPath(
+		const FString& LobbyID,
+		const FString& TargetUsername)
+	{
+		return FString::Printf(
+			TEXT("/lobby/kick/%s/%s"),
+			*LobbyID,
+			*TargetUsername);
+	}
+
 	bool TryParseLobbyInfo(const TSharedPtr<FJsonObject>& JsonObject, FCGSLobbyInfo& OutLobby)
 	{
 		OutLobby = FCGSLobbyInfo{};
@@ -164,7 +174,7 @@ namespace CGSLobbyRequests
 				OutLobbies.Add(MoveTemp(LobbyInfo));
 			}
 		}
-
 		return true;
 	}
 }
+

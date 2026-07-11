@@ -22,3 +22,24 @@ UCGSLobbyEntryWidget::GetLobbyInfo() const
 {
 	return LobbyInfo;
 }
+
+void UCGSLobbyEntryWidget::SetTargetUsername(
+    const FString& InUsername)
+{
+    TargetUsername = InUsername;
+}
+
+void UCGSLobbyEntryWidget::KickPlayer()
+{
+    UCGSLobbySubsystem* Lobby =
+        GetLobbySubsystem();
+
+    if (!Lobby)
+    {
+        return;
+    }
+
+    Lobby->KickPlayer(
+        Lobby->GetCurrentLobbyID(),
+        TargetUsername);
+}
